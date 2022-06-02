@@ -1,3 +1,6 @@
 01-intro/*.txt
 02-experiment-tracking/taxi_data_folder/*.parquet
 02-experiment-tracking/output/*.pkl
+02-experiment-tracking/artifacts/*/
+02-experiment-tracking/mlruns/*/
+02-experiment-tracking/*.db
