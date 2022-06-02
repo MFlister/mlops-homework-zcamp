@@ -37,8 +37,11 @@ def train_and_log_model(data_path, params):
     X_test, y_test = load_pickle(os.path.join(data_path, "test.pkl"))
 
     with mlflow.start_run():
-        params = space_eval(SPACE, params)
-        rf = RandomForestRegressor(**params)
+        print(params['params'])
+        final_params = eval(params['params'])
+        print(type(final_params))
+        #params = space_eval(SPACE, params)
+        rf = RandomForestRegressor(**final_params)
         rf.fit(X_train, y_train)
 
         # evaluate model on the validation and test sets
@@ -65,10 +68,12 @@ def run(data_path, log_top):
 
     # select the model with the lowest test RMSE
     experiment = client.get_experiment_by_name(EXPERIMENT_NAME)
-    # best_run = client.search_runs( ...  )[0]
+    best_run = client.search_runs(experiment_ids=experiment.experiment_id,run_view_type=ViewType.ACTIVE_ONLY,max_results=5,order_by=["metrics.rmse ASC"])[0]
 
     # register the best model
     # mlflow.register_model( ... )
+    model_uri = f"runs:/{best_run.info.run_id}/model"
+    mlflow.register_model(model_uri=model_uri, name="random-forest-best-model")
 
 
 if __name__ == '__main__':
